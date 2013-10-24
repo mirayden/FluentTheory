@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentTheory", "src\FluentTheory\FluentTheory.csproj", "{1CAD326F-6902-494A-940C-7FC66E3BD0BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentTheory", "FluentTheory\FluentTheory.csproj", "{1CAD326F-6902-494A-940C-7FC66E3BD0BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentTheory.UnitTest", "src\FluentTheory.UnitTest\FluentTheory.UnitTest.csproj", "{0F3C8CFF-A848-46C0-9F6C-0BC550919FBF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentTheory.UnitTest", "FluentTheory.UnitTest\FluentTheory.UnitTest.csproj", "{0F3C8CFF-A848-46C0-9F6C-0BC550919FBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentTheory.FunctionalTest", "src\FluentTheory.FunctionalTest\FluentTheory.FunctionalTest.csproj", "{BBBB8767-512C-41E9-9E81-DDE58EE53938}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentTheory.FunctionalTest", "FluentTheory.FunctionalTest\FluentTheory.FunctionalTest.csproj", "{BBBB8767-512C-41E9-9E81-DDE58EE53938}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
