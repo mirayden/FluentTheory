@@ -33,7 +33,7 @@ namespace FluentTheory
 		/// Returns hypothesis by name.
 		/// </summary>
 		/// <param name="hypothesisName">hypothesis name</param>
-		/// <returns>registered named hypothesis</returns>
+		/// <returns>Returns hypothesis if hypothesis under the given name is found, null otherwise.</returns>
 		public Hypothesis this[string hypothesisName]
 		{
 			get

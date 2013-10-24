@@ -21,14 +21,26 @@ namespace FluentTheory
 {
 	public static class TheoryValueAsExtension
 	{
-		public static TheoryClause<DateTime> AsDateTime(this TheoryClause<string> theoryClause)
+		/// <summary>
+		/// Creates TheoryClause to convert date time string to <see cref="T:System.DateTime"/>.
+		/// </summary>
+		/// <param name="previuosTheoryClause">Previous theory clause.</param>
+		/// <returns></returns>
+		public static TheoryClause<DateTime> AsDateTime(this TheoryClause<string> previuosTheoryClause)
 		{
-			return new TheoryClause<DateTime>(DateTime.Parse(theoryClause.Value)) { Previous = theoryClause };
+			return new TheoryClause<DateTime>(DateTime.Parse(previuosTheoryClause.Value)) { Previous = previuosTheoryClause };
 		}
 
-		public static TheoryClause<DateTime> AsDateTime(this TheoryClause<string> theoryClause, IFormatProvider formatProvider, DateTimeStyles dateTimeStyles = DateTimeStyles.None)
+		/// <summary>
+		/// Creates theory clause to convert
+		/// </summary>
+		/// <param name="previuosTheoryClause"></param>
+		/// <param name="formatProvider"></param>
+		/// <param name="dateTimeStyles"></param>
+		/// <returns></returns>
+		public static TheoryClause<DateTime> AsDateTime(this TheoryClause<string> previuosTheoryClause, IFormatProvider formatProvider, DateTimeStyles dateTimeStyles = DateTimeStyles.None)
 		{
-			return new TheoryClause<DateTime>(DateTime.Parse(theoryClause.Value, formatProvider, dateTimeStyles)) { Previous = theoryClause };
+			return new TheoryClause<DateTime>(DateTime.Parse(previuosTheoryClause.Value, formatProvider, dateTimeStyles)) { Previous = previuosTheoryClause };
 		}
 
 		public static TheoryClause<decimal> AsDecimal(this TheoryClause<string> theoryClause, IFormatProvider formatProvider = null, NumberStyles numberStyles = NumberStyles.Number)

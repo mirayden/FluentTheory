@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentTheory;
 using System.Globalization;
 
 namespace FluentTheory.UnitTest

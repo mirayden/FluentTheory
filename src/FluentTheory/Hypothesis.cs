@@ -74,8 +74,8 @@ namespace FluentTheory
 		/// Evaluates hypothesis.
 		/// </summary>
 		/// <returns>
-		/// true or false - if hypothesis is true or false.
-		/// null - if preconditions are not fulfilled.
+		/// true or false, if hypothesis is true or false.
+		/// null, if preconditions are not fulfilled.
 		/// </returns>
 		public bool? Evaluate()
 		{
@@ -158,7 +158,7 @@ namespace FluentTheory
 		/// <returns>same hypothesis</returns>
 		public Hypothesis IfFalse(Action action)
 		{
-			_trueResultActions.Add(action);
+			_falseResultActions.Add(action);
 			return this;
 		}
 
