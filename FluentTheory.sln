@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentTheory", "src\FluentT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentTheory.UnitTest", "src\FluentTheory.UnitTest\FluentTheory.UnitTest.csproj", "{0F3C8CFF-A848-46C0-9F6C-0BC550919FBF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentTheory.FunctionalTest", "src\FluentTheory.FunctionalTest\FluentTheory.FunctionalTest.csproj", "{BBBB8767-512C-41E9-9E81-DDE58EE53938}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{0F3C8CFF-A848-46C0-9F6C-0BC550919FBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F3C8CFF-A848-46C0-9F6C-0BC550919FBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F3C8CFF-A848-46C0-9F6C-0BC550919FBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBBB8767-512C-41E9-9E81-DDE58EE53938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBBB8767-512C-41E9-9E81-DDE58EE53938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBBB8767-512C-41E9-9E81-DDE58EE53938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBBB8767-512C-41E9-9E81-DDE58EE53938}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
