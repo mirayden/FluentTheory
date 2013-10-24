@@ -62,12 +62,12 @@ namespace FluentTheory
 		/// <returns>True if theory is proved by evaluation, otherwise false.</returns>
 		public bool Evaluate()
 		{
-			bool evaluationResult = true;
+			bool result = true;
 			foreach (Hypothesis hypothesis in _hypotheses)
 			{
-				evaluationResult = evaluationResult && (hypothesis.Evaluate() != false);
+				result = (hypothesis.Evaluate() != false) && result;
 			}
-			return evaluationResult;
+			return result;
 		}
 
 		/// <summary>
@@ -109,6 +109,16 @@ namespace FluentTheory
 		/// <param name="supposition">Supposition for new hypothesis</param>
 		/// <returns>new hypothesis</returns>
 		public Hypothesis Suppose(string hypothesisName, Func<bool> supposition)
+		{
+			return Hypothesis(hypothesisName).Suppose(supposition);
+		}
+
+		public Hypothesis Suppose<TValue>(Func<TheoryClause<TValue>> supposition)
+		{
+			return Suppose(null, supposition);
+		}
+
+		public Hypothesis Suppose<TValue>(string hypothesisName, Func<TheoryClause<TValue>> supposition)
 		{
 			return Hypothesis(hypothesisName).Suppose(supposition);
 		}

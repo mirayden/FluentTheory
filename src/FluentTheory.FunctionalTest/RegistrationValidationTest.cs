@@ -1,4 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FluentTheory.FunctionalTest
@@ -6,6 +10,16 @@ namespace FluentTheory.FunctionalTest
 	[TestClass]
 	public class RegistrationValidationTest
 	{
+		#region Helpers
+		[TestInitialize]
+		public void Initialize()
+		{
+			//Use invariant culture to parse strings.
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+		}
+		#endregion Helpers
+
+
 		[TestMethod]
 		public void PasswordValidation_PasswordStringIsABC_PasswordIsTooShort()
 		{
@@ -16,8 +30,8 @@ namespace FluentTheory.FunctionalTest
 
 			var theory = new Theory();
 			theory.Suppose(() => passwordString.Length > 8)
-				.IfFalse(() => result = expectedResult)
-				.IfTrue(() => result = "password is ok");
+				.DoFalse(() => result = expectedResult)
+				.DoTrue(() => result = "password is ok");
 
 			//Act
 			theory.Evaluate();
@@ -30,26 +44,21 @@ namespace FluentTheory.FunctionalTest
 		public void PasswordValidation_PasswordStringIsSecuredPassword123_PasswordIsSecured()
 		{
 			//Assert
-			string passwordString;
-			passwordString = "SecuredPassword123";
+			string passwordString = "SecuredPassword123";
 			int strength = 0;
 
-
-			//TODO: make possible to use preconditions from previous hypothesis.
 			var theory = new Theory();
 			theory
-				.Suppose(() => Regex.IsMatch(passwordString, "[A-Z]"))
-					.WithPrecondition(h => passwordString != null)
-					.IfTrue(() => strength++)
-				.Suppose(() => Regex.IsMatch(passwordString, "[a-z]"))
-					.WithPrecondition(h => passwordString != null)
-					.IfTrue(() => strength++)
-				.Suppose(() => Regex.IsMatch(passwordString, "[0-9]"))
-					.WithPrecondition(h => passwordString != null)
-					.IfTrue(() => strength++)
-				.Suppose(() => passwordString.Length >= 8)
-					.WithPrecondition(h => passwordString != null)
-					.IfTrue(() => strength++);
+				.Suppose(() => passwordString != null)
+					.NestedHypothesis()
+						.Suppose(() => Regex.IsMatch(passwordString, "[A-Z]"))
+							.DoTrue(() => strength++)
+						.Suppose(() => Regex.IsMatch(passwordString, "[a-z]"))
+							.DoTrue(() => strength++)
+						.Suppose(() => Regex.IsMatch(passwordString, "[0-9]"))
+							.DoTrue(() => strength++)
+						.Suppose(() => passwordString.Length >= 8)
+							.DoTrue(() => strength++);
 
 			//Act
 			theory.Evaluate();
@@ -59,11 +68,105 @@ namespace FluentTheory.FunctionalTest
 		}
 
 		[TestMethod]
-		[Ignore]
-		public void RegistrationValidation_EnteredDataIsValid_RegistrationIsCompleted() { }
+		public void RegistrationValidation_EnteredDataIsValid_RegistrationIsCompleted()
+		{
+			//Assert
+			string passwordString = "SecuredPassword123";
+			string firstName = "John";
+			string lastName = "Smith";
+			string dob = "1990-01-01";
+			string email = "john.Smith@nomail.com";
+			int strength = 0;
+
+			var errors = new Dictionary<string, string>();
+
+			var theory = new Theory();
+			theory
+				.Hypothesis("password strength")
+					.Suppose(() => passwordString != null)
+						.NestedHypothesis()
+							.Suppose(() => Regex.IsMatch(passwordString, "[A-Z]"))
+								.DoTrue(() => strength++)
+							.Suppose(() => Regex.IsMatch(passwordString, "[a-z]"))
+								.DoTrue(() => strength++)
+							.Suppose(() => Regex.IsMatch(passwordString, "[0-9]"))
+								.DoTrue(() => strength++)
+							.Suppose(() => passwordString.Length >= 8)
+								.DoTrue(() => strength++);
+
+			theory.Suppose(() => theory["password strength"].IsValid == true)
+				.DoFalse(() => errors.Add("password", "Password is insecured"));
+
+			theory.Suppose(() => !string.IsNullOrWhiteSpace(firstName))
+				.DoFalse(() => errors.Add("lastName", "First name is empty."));
+
+			theory.Suppose(() => !string.IsNullOrWhiteSpace(lastName))
+				.DoFalse(() => errors.Add("lastName", "Last name is empty."));
+
+			theory.Suppose(() => 
+				TheoryClause.Create(dob)
+					.AsDateTime()
+					.Is(x => x < DateTime.Now)
+					.Is(x => x > DateTime.Now.AddYears(-100)))
+				.DoFalse(() => errors.Add("dob", "Day of birth is incorrect."));
+
+			theory.Suppose(() => TheoryClause.IsEmail(email))
+				.DoFalse(() => errors.Add("email", "Email is incorrect."));
+
+			//Assert
+			Assert.IsTrue(theory.Evaluate());
+			Assert.AreEqual(0, errors.Count);
+		}
 
 		[TestMethod]
-		[Ignore]
-		public void RegistrationValidation_EnteredDataIsInvalid_ErrorMessageAreShown() { }
+		public void RegistrationValidation_EnteredDataIsInvalid_ErrorMessageAreShown()
+		{
+			//Assert
+			string passwordString = "weak";
+			string firstName = "";
+			string lastName = null;
+			string dob = "1800-01-01";
+			string email = "john.Smith@nomail";
+			int strength = 0;
+
+			var errors = new Dictionary<string, string>();
+
+			var theory = new Theory();
+			theory
+				.Hypothesis("password strength")
+					.Suppose(() => passwordString != null)
+						.NestedHypothesis()
+							.Suppose(() => Regex.IsMatch(passwordString, "[A-Z]"))
+								.DoTrue(() => strength++)
+							.Suppose(() => Regex.IsMatch(passwordString, "[a-z]"))
+								.DoTrue(() => strength++)
+							.Suppose(() => Regex.IsMatch(passwordString, "[0-9]"))
+								.DoTrue(() => strength++)
+							.Suppose(() => passwordString.Length >= 8)
+								.DoTrue(() => strength++);
+
+			theory.Suppose(() => theory["password strength"].IsValid == false)
+				.DoFalse(() => errors.Add("password", "Password is insecured"));
+
+			theory.Suppose(() => !string.IsNullOrWhiteSpace(firstName))
+				.DoFalse(() => errors.Add("firstName", "First name is empty."));
+
+			theory.Suppose(() => !string.IsNullOrWhiteSpace(lastName))
+				.DoFalse(() => errors.Add("lastName", "Last name is empty."));
+
+			theory.Suppose(() =>
+				TheoryClause.Create(dob)
+					.AsDateTime()
+					.Is(x => x < DateTime.Now)
+					.Is(x => x > DateTime.Now.AddYears(-100)))
+				.DoFalse(() => errors.Add("dob", "Day of birth is incorrect."));
+
+			theory.Suppose(() => TheoryClause.IsEmail(email))
+				.DoFalse(() => errors.Add("email", "Email is incorrect."));
+
+			//Assert
+			Assert.IsFalse(theory.Evaluate());
+			Assert.AreEqual(5, errors.Count);
+		}
 	}
 }

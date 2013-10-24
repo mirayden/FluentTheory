@@ -84,7 +84,19 @@ namespace FluentTheory
 				throw new EvaluateException("Hypothesis is already evaluated.");
 			}
 
+			if (ParentHypothesis != null
+				&& !ParentHypothesis.IsEvaluated)
+			{
+				throw new EvaluateException("Can not evaluate nested hypothesis before parent hypothesis.");
+			}
+
 			IsEvaluated = true;
+
+			if (ParentHypothesis != null
+				&& ParentHypothesis.IsValid != true)
+			{
+				return null;
+			}
 
 			if (_preconditions.Any(precondition => !precondition(this))) {
 				return null;
@@ -110,7 +122,7 @@ namespace FluentTheory
 		/// </summary>
 		/// <param name="hypothesisName">Name for new hypothesis.</param>
 		/// <returns>new hypothesis</returns>
-		public Hypothesis DependentHypothesis(string hypothesisName = null)
+		public Hypothesis NestedHypothesis(string hypothesisName = null)
 		{
 			var hypothesis = Theory.Hypothesis(hypothesisName);
 			hypothesis.ParentHypothesis = this;
@@ -122,7 +134,7 @@ namespace FluentTheory
 		/// </summary>
 		/// <param name="precondition"></param>
 		/// <returns></returns>
-		public Hypothesis WithPrecondition(Func<Hypothesis, bool> precondition )
+		public Hypothesis OnlyIf(Func<Hypothesis, bool> precondition )
 		{
 			_preconditions.Add(precondition);
 			return this;
@@ -156,7 +168,7 @@ namespace FluentTheory
 		/// </summary>
 		/// <param name="action"></param>
 		/// <returns>same hypothesis</returns>
-		public Hypothesis IfFalse(Action action)
+		public Hypothesis DoFalse(Action action)
 		{
 			_falseResultActions.Add(action);
 			return this;
@@ -167,7 +179,7 @@ namespace FluentTheory
 		/// </summary>
 		/// <param name="action"></param>
 		/// <returns>same hypothesis</returns>
-		public Hypothesis IfTrue(Action action)
+		public Hypothesis DoTrue(Action action)
 		{
 			_trueResultActions.Add(action);
 			return this;
