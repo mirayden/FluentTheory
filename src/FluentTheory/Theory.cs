@@ -20,7 +20,7 @@ using System.Collections.Generic;
 namespace FluentTheory
 {
 	/// <summary>
-	/// Class represents theory that we want to prove.
+	/// Theory we want to evaluate.
 	/// </summary>
 	public class Theory
 	{
@@ -47,6 +47,9 @@ namespace FluentTheory
 
 
 		#region Constructors
+		/// <summary>
+		/// Creates new instance.
+		/// </summary>
 		public Theory()
 		{
 			_hypotheses = new List<Hypothesis>();
@@ -71,13 +74,14 @@ namespace FluentTheory
 		}
 
 		/// <summary>
-		/// Creates new hypothesis for current theory.
+		/// Adds new hypothesis into theory.
 		/// </summary>
-		/// <param name="hypothesisName">hypothesis name</param>
-		/// <returns>new hypothesis</returns>
+		/// <param name="hypothesisName">Name for new hypothesis.</param>
+		/// <returns>New hypothesis.</returns>
 		public Hypothesis Hypothesis(string hypothesisName = null)
 		{
 			var hypothesis = new Hypothesis(this);
+			hypothesis.Name = hypothesisName;
 			_hypotheses.Add(hypothesis);
 
 			if (!String.IsNullOrEmpty(hypothesisName))
@@ -93,31 +97,45 @@ namespace FluentTheory
 		}
 
 		/// <summary>
-		/// Creates new hypothesis for given supposition.
+		/// Adds new hypothesis into theory for given supposition.
 		/// </summary>
-		/// <param name="supposition">Supposition for new hypothesis</param>
-		/// <returns>new hypothesis</returns>
+		/// <param name="supposition">Supposition for new hypothesis.</param>
+		/// <returns>New hypothesis.</returns>
 		public Hypothesis Suppose(Func<bool> supposition)
 		{
 			return Suppose(null, supposition);
 		}
 
 		/// <summary>
-		/// Creates new hypothesis for given supposition.
+		/// Adds new named hypothesis into theory for given supposition.
 		/// </summary>
-		/// <param name="hypothesisName">Hypothesis name</param>
+		/// <param name="hypothesisName">Name for new hypothesis.</param>
 		/// <param name="supposition">Supposition for new hypothesis</param>
-		/// <returns>new hypothesis</returns>
+		/// <returns>New hypothesis</returns>
 		public Hypothesis Suppose(string hypothesisName, Func<bool> supposition)
 		{
 			return Hypothesis(hypothesisName).Suppose(supposition);
 		}
 
+		/// <summary>
+		/// Adds new hypothesis for given supposition based on <see cref="T:FluentTheory.TheoryClause`1>" />.
+		/// </summary>
+		/// <typeparam name="TValue">Theory clause type.</typeparam>
+		/// <param name="supposition">Supposition for new hypothesis.</param>
+		/// <returns>New hypothesis.</returns>
 		public Hypothesis Suppose<TValue>(Func<TheoryClause<TValue>> supposition)
 		{
 			return Suppose(null, supposition);
 		}
 
+		/// <summary>
+		/// Adds new named hypothesis for given supposition based on <see cref="T:FluentTheory.TheoryClause`1>" />.
+		/// </summary>
+		/// <typeparam name="TValue">Theory clause type.</typeparam>
+		/// <param name="hypothesisName">Name for new hypothesis.</param>
+		/// <param name="supposition">Supposition for new hypothesis.</param>
+		/// <returns>New hypothesis.</returns>
+		/// <returns>New hypothesis.</returns>
 		public Hypothesis Suppose<TValue>(string hypothesisName, Func<TheoryClause<TValue>> supposition)
 		{
 			return Hypothesis(hypothesisName).Suppose(supposition);

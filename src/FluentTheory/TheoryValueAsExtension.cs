@@ -22,35 +22,74 @@ namespace FluentTheory
 	public static class TheoryValueAsExtension
 	{
 		/// <summary>
-		/// Creates TheoryClause to convert date time string to <see cref="T:System.DateTime"/>.
+		/// Creates <see cref="T:FluentTheory.TheoryClause`1"/> to convert previous clause value from type <see cref="T:System.String"/> into <see cref="T:System.DateTime"/>.
 		/// </summary>
-		/// <param name="previuosTheoryClause">Previous theory clause.</param>
-		/// <returns></returns>
-		public static TheoryClause<DateTime> AsDateTime(this TheoryClause<string> previuosTheoryClause)
+		/// <param name="clauseToConvert">Clause to convert.</param>
+		/// <returns>New instance of <see cref="T:FluentTheory.TheoryClause`1"/>.</returns>
+		public static TheoryClause<DateTime> AsDateTime(this TheoryClause<string> clauseToConvert)
 		{
-			return new TheoryClause<DateTime>(DateTime.Parse(previuosTheoryClause.Value)) { Previous = previuosTheoryClause };
+			return new TheoryClause<DateTime>(DateTime.Parse(clauseToConvert.Value)) { Previous = clauseToConvert };
 		}
 
 		/// <summary>
-		/// Creates theory clause to convert
+		/// Creates <see cref="T:FluentTheory.TheoryClause`1"/> to convert previous clause value from type <see cref="T:System.String"/> into <see cref="T:System.DateTime"/>.
 		/// </summary>
-		/// <param name="previuosTheoryClause"></param>
-		/// <param name="formatProvider"></param>
-		/// <param name="dateTimeStyles"></param>
-		/// <returns></returns>
-		public static TheoryClause<DateTime> AsDateTime(this TheoryClause<string> previuosTheoryClause, IFormatProvider formatProvider, DateTimeStyles dateTimeStyles = DateTimeStyles.None)
+		/// <param name="clauseToConvert">Clause that be converted.</param>
+		/// <param name="formatProvider">An object that supplies culture-specific format information about string value of converted clause.</param>
+		/// <param name="dateTimeStyles">A bitwise combination of <see cref="T:System.Globalization.DateTimeStyles"/> enumeration values that indicates the permitted format of <paramref name="dateTimeString"/>.
+		/// A typical value to specify is <see cref="F:System.Globalization.DateTimeStyles.None"/>.</param>
+		/// <param name="formats">Array of allowed formats.</param>
+		/// <returns>New instance of <see cref="T:FluentTheory.TheoryClause`1"/></returns>
+		public static TheoryClause<DateTime> AsDateTime(this TheoryClause<string> clauseToConvert, IFormatProvider formatProvider, DateTimeStyles dateTimeStyles = DateTimeStyles.None, params string[] formats)
 		{
-			return new TheoryClause<DateTime>(DateTime.Parse(previuosTheoryClause.Value, formatProvider, dateTimeStyles)) { Previous = previuosTheoryClause };
+			Func<DateTime> valueExpression = () =>
+			{
+				DateTime value;
+				if (formats == null)
+				{
+					if (DateTime.TryParse(clauseToConvert.Value, formatProvider, dateTimeStyles, out value))
+					{
+						throw new FormatException("Cannot parse string " + clauseToConvert.Value + " to DateTime");
+					}
+				}
+				if (!DateTime.TryParseExact(clauseToConvert.Value, formats, formatProvider, dateTimeStyles, out value))
+				{
+					throw new FormatException("Cannot parse string " + clauseToConvert.Value + " to DateTime");
+				}
+				return value;
+			};
+
+			return new TheoryClause<DateTime>(valueExpression) { Previous = clauseToConvert };
 		}
 
-		public static TheoryClause<decimal> AsDecimal(this TheoryClause<string> theoryClause, IFormatProvider formatProvider = null, NumberStyles numberStyles = NumberStyles.Number)
+		/// <summary>
+		/// Creates <see cref="T:FluentTheory.TheoryClause`1"/> to convert previous clause value from type <see cref="T:System.String"/> into <see cref="T:System.Decimal"/>.
+		/// </summary>
+		/// <param name="clauseToConvert">Clause that be converted.</param>
+		/// <param name="formatProvider">An object that supplies culture-specific format information about string value of converted clause.</param>
+		/// <param name="numberStyles">A bitwise combination of <see cref="T:System.Globalization.NumberStyles"/> values that indicates the style elements that can be present in <paramref name="decimalString"/>.</param>
+		/// <returns>New instance of <see cref="T:FluentTheory.TheoryClause`1"/></returns>
+		public static TheoryClause<decimal> AsDecimal(this TheoryClause<string> clauseToConvert, IFormatProvider formatProvider = null, NumberStyles numberStyles = NumberStyles.Number)
 		{
+			Func<decimal> valueExpression;
 			if (formatProvider == null)
 			{
-				return new TheoryClause<decimal>(decimal.Parse(theoryClause.Value, numberStyles)) { Previous = theoryClause };
+				valueExpression = () => decimal.Parse(clauseToConvert.Value, numberStyles);
 			}
-			return new TheoryClause<decimal>(decimal.Parse(theoryClause.Value, numberStyles, formatProvider)) { Previous = theoryClause };
+			else
+			{
+				valueExpression = () => decimal.Parse(clauseToConvert.Value, numberStyles, formatProvider);
+			}
+
+			return new TheoryClause<decimal>(valueExpression) { Previous = clauseToConvert };
 		}
+
+		/// </summary>
+		/// <param name="theoryClause"></param>
+		/// <param name="formatProvider"></param>
+		/// <param name="numberStyles"></param>
+		/// <returns></returns>		/// <summary>
+		/// 
 
 		public static TheoryClause<int> AsInt(this TheoryClause<string> theoryClause, IFormatProvider formatProvider = null, NumberStyles numberStyles = NumberStyles.Integer)
 		{

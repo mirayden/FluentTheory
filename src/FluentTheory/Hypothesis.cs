@@ -22,11 +22,13 @@ using System.Linq;
 namespace FluentTheory
 {
 	/// <summary>
-	/// Hypothesis is a part of theory.
+	/// Hypothesis is an evaluable part of a theory.
 	/// </summary>
 	public class Hypothesis
 	{
 		#region Properties
+		public string Name { get; set; }
+
 		private readonly List<Func<bool>> _suppositions;
 
 		private readonly List<Action> _falseResultActions;
@@ -51,13 +53,17 @@ namespace FluentTheory
 		public bool? IsValid { get; private set; }
 
 		/// <summary>
-		/// Parent hypothesis. Is set only if this hypothesis is created from anothe hypothesis.
+		/// Parent hypothesis. Is filled only by nested hypothesis.
 		/// </summary>
 		public Hypothesis ParentHypothesis { get; private set; }
 		#endregion Properties
 
 
 		#region Constructors
+		/// <summary>
+		/// Creates new instance.
+		/// </summary>
+		/// <param name="theory">Referenced theory.</param>
 		public Hypothesis(Theory theory)
 		{
 			_falseResultActions = new List<Action>();
@@ -74,8 +80,8 @@ namespace FluentTheory
 		/// Evaluates hypothesis.
 		/// </summary>
 		/// <returns>
-		/// true or false, if hypothesis is true or false.
-		/// null, if preconditions are not fulfilled.
+		/// Evaluation result as boolean if all preconditions are fulfilled and, in case of nested hypothesis,
+		/// if parent hypothesis evaluation is true. Otherwise null.
 		/// </returns>
 		public bool? Evaluate()
 		{
@@ -118,10 +124,10 @@ namespace FluentTheory
 		}
 
 		/// <summary>
-		/// Creates dependent hypothesis
+		/// Creates nested hypothesis.
 		/// </summary>
 		/// <param name="hypothesisName">Name for new hypothesis.</param>
-		/// <returns>new hypothesis</returns>
+		/// <returns>New hypothesis.</returns>
 		public Hypothesis NestedHypothesis(string hypothesisName = null)
 		{
 			var hypothesis = Theory.Hypothesis(hypothesisName);
@@ -130,10 +136,10 @@ namespace FluentTheory
 		}
 
 		/// <summary>
-		/// Adds precondition that needs to be fullfilled to allow hypothesis be evaluated.
+		/// Adds new precondition for hypothesis.
 		/// </summary>
-		/// <param name="precondition"></param>
-		/// <returns></returns>
+		/// <param name="precondition">Precondition that must be fullfilled before hypothesis evaluation.</param>
+		/// <returns>Current hypothesis.</returns>
 		public Hypothesis OnlyIf(Func<Hypothesis, bool> precondition )
 		{
 			_preconditions.Add(precondition);
@@ -141,10 +147,22 @@ namespace FluentTheory
 		}
 
 		/// <summary>
-		/// Adds suppositions to proove hypothesis.
+		/// Adds new precondition based on <see cref="T:FluentTheory.TheoryClause`1>" /> that must be fullfilled before hypothesis evaluation.
 		/// </summary>
-		/// <param name="supposition">Supposition to prove hypothesis.</param>
-		/// <returns>same hypothesis</returns>
+		/// <typeparam name="TValue">Theory clause type.</typeparam>
+		/// <param name="precondition">Precondition that must be fullfilled before hypothesis evaluation.</param>
+		/// <returns>Current hypothesis.</returns>
+		public Hypothesis OnlyIf<TValue>(Func<Hypothesis, TheoryClause<TValue>> precondition)
+		{
+			_preconditions.Add(h => precondition(h).Evaluate());
+			return this;
+		}
+
+		/// <summary>
+		/// Adds supposition into hypothesis scope.
+		/// </summary>
+		/// <param name="supposition">Supposition to validate current hypothesis.</param>
+		/// <returns>Current hypothesis</returns>
 		public Hypothesis Suppose(Func<bool> supposition)
 		{
 			_suppositions.Add(supposition);
@@ -152,11 +170,11 @@ namespace FluentTheory
 		}
 
 		/// <summary>
-		/// Adds suppositions to proove hypothesis.
+		/// Adds supposition based on <see cref="T:FluentTheory.TheoryClause`1>" /> into hypothesis scope.
 		/// </summary>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="supposition">Supposition to prove hypothesis.</param>
-		/// <returns>same hypothesis</returns>
+		/// <typeparam name="TValue">Theory clause type.</typeparam>
+		/// <param name="supposition">Supposition to validate current hypothesis.</param>
+		/// <returns>Current hypothesis.</returns>
 		public Hypothesis Suppose<TValue>(Func<TheoryClause<TValue>> supposition)
 		{
 			_suppositions.Add(() => supposition().Evaluate());
@@ -164,9 +182,9 @@ namespace FluentTheory
 		}
 
 		/// <summary>
-		/// Add action that will be triggered on hypothesis evaluation if evaluation is true.
+		/// Add action that will be triggered once on false evaluation result.
 		/// </summary>
-		/// <param name="action"></param>
+		/// <param name="action">Action to be triggered.</param>
 		/// <returns>same hypothesis</returns>
 		public Hypothesis DoFalse(Action action)
 		{
@@ -175,9 +193,9 @@ namespace FluentTheory
 		}
 
 		/// <summary>
-		/// Add action that will be triggered on hypothesis evaluation if evaluation is false.
+		/// Add action that will be triggered once on true evaluation result.
 		/// </summary>
-		/// <param name="action"></param>
+		/// <param name="action">Action to be triggered.</param>
 		/// <returns>same hypothesis</returns>
 		public Hypothesis DoTrue(Action action)
 		{

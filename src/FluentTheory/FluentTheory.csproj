@@ -40,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hypothesis.cs" />
-    <Compile Include="IEvaluable.cs" />
     <Compile Include="TheoryClause.cs" />
     <Compile Include="Theory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
