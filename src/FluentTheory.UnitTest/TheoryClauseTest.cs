@@ -16,7 +16,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Globalization;
 
@@ -329,5 +331,21 @@ namespace FluentTheory.UnitTest
 			Assert.IsFalse(TheoryClause.IsEmail("myemail"));
 		}
 		#endregion IsEmail
+
+
+		#region Generic class test
+		[TestMethod]
+		public void Evaluate_ClauseIsAlreadyEvaluated_ThrowsEvaluateException()
+		{
+			//Arrange
+			var clause = new TheoryClause<string>("", String.IsNullOrEmpty);
+			Action action = () => clause.Evaluate();
+
+			//Act
+			clause.Evaluate();
+			action.ShouldThrow<EvaluateException>();
+		}
+		#endregion Generic class test
+
 	}
 }

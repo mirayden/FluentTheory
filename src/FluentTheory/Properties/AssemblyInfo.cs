@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion License
 
+
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -24,7 +25,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("FluentTheory")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("FluentTheory")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2013")]
 [assembly: AssemblyTrademark("")]
@@ -51,4 +52,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-//TODO: use Moq hint to define friendly assembly.
+[assembly: InternalsVisibleTo("FluentTheory.UnitTest")]
+namespace FluentTheory.Properties
+{
+	internal static class FluentTheoryAssembly
+	{
+	}
+}

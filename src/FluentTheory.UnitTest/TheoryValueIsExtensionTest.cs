@@ -1,207 +1,247 @@
-﻿using FluentTheory;
+﻿using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Globalization;
 
 namespace FluentTheory.UnitTest
 {
-
-
-	/// <summary>
-	///This is a test class for TheoryValueIsExtensionTest and is intended
-	///to contain all TheoryValueIsExtensionTest Unit Tests
-	///</summary>
-	[TestClass()]
+	[TestClass]
 	public class TheoryValueIsExtensionTest
 	{
-
-
-		private TestContext testContextInstance;
-
-		/// <summary>
-		///Gets or sets the test context which provides
-		///information about and functionality for the current test run.
-		///</summary>
-		public TestContext TestContext
+		#region Helpers
+		[TestInitialize]
+		public void Initialize()
 		{
-			get
-			{
-				return testContextInstance;
-			}
-			set
-			{
-				testContextInstance = value;
-			}
+			//Use invariant culture to parse strings.
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+		}
+		#endregion Helpers
+
+
+		#region IsBool
+		[TestMethod]
+		public void IsBool_ClauseValueIsValidBoolean_ReturnsTrue()
+		{
+			//Assert
+			Assert.IsTrue(new TheoryClause<string>("true").IsBool().Evaluate());
+			Assert.IsTrue(new TheoryClause<string>("TRUE").IsBool().Evaluate());
+			Assert.IsTrue(new TheoryClause<string>("false").IsBool().Evaluate());
+			Assert.IsTrue(new TheoryClause<string>("FALSE").IsBool().Evaluate());
 		}
 
-		#region Additional test attributes
-		// 
-		//You can use the following additional attributes as you write your tests:
-		//
-		//Use ClassInitialize to run code before running the first test in the class
-		//[ClassInitialize()]
-		//public static void MyClassInitialize(TestContext testContext)
-		//{
-		//}
-		//
-		//Use ClassCleanup to run code after all tests in a class have run
-		//[ClassCleanup()]
-		//public static void MyClassCleanup()
-		//{
-		//}
-		//
-		//Use TestInitialize to run code before running each test
-		//[TestInitialize()]
-		//public void MyTestInitialize()
-		//{
-		//}
-		//
-		//Use TestCleanup to run code after each test has run
-		//[TestCleanup()]
-		//public void MyTestCleanup()
-		//{
-		//}
-		//
-		#endregion
-
-
-		/// <summary>
-		///A test for IsBool
-		///</summary>
-		[TestMethod()]
-		public void IsBoolTest()
+		[TestMethod]
+		public void IsBool_ClauseValueIsInvalidBoolean_ReturnsFalse()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> actual;
-			actual = TheoryValueIsExtension.IsBool(theoryClause);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Assert
+			Assert.IsFalse(new TheoryClause<string>("wrong string").IsBool().Evaluate());
+		}
+		#endregion IsBool
+
+
+		#region IsDateTime
+		[TestMethod]
+		public void IsDateTime_ValidDateTime_ReturnsTrue()
+		{
+			//Assert
+			Assert.IsTrue(new TheoryClause<string>("2013-01-01 23:59:59 -0100").IsDateTime().Evaluate());
 		}
 
-		/// <summary>
-		///A test for IsDateTime
-		///</summary>
-		[TestMethod()]
-		public void IsDateTimeTest()
+		[TestMethod]
+		public void IsDateTime_InvalidDateTime_ReturnsFalse()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> actual;
-			actual = TheoryValueIsExtension.IsDateTime(theoryClause);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Assert
+			Assert.IsFalse(new TheoryClause<string>("Wrong Date Time").IsDateTime().Evaluate());
 		}
 
-		/// <summary>
-		///A test for IsDateTime
-		///</summary>
-		[TestMethod()]
-		public void IsDateTimeTest1()
+		[TestMethod]
+		public void IsDateTime_CustomFormatAndValidDate_ReturnsTrue()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			DateTimeStyles dateTimeStyles = new DateTimeStyles(); // TODO: Initialize to an appropriate value
-			string[] formats = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> actual;
-			actual = TheoryValueIsExtension.IsDateTime(theoryClause, formatProvider, dateTimeStyles, formats);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-DE");
+			DateTimeStyles dateTimeStyles = DateTimeStyles.AllowInnerWhite;
+			string[] formats = { "d" };
+
+			//Assert
+			Assert.IsTrue(new TheoryClause<string>("31 . 12 . 2000").IsDateTime(formatProvider, dateTimeStyles, formats).Evaluate());
 		}
 
-		/// <summary>
-		///A test for IsDecimal
-		///</summary>
-		[TestMethod()]
-		public void IsDecimalTest()
+		[TestMethod]
+		public void IsDateTime_CustomFormatAndInvalidDate_ReturnsFalse()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			NumberStyles numberStyles = new NumberStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<string> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> actual;
-			actual = TheoryValueIsExtension.IsDecimal(theoryClause, formatProvider, numberStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-DE");
+			DateTimeStyles dateTimeStyles = DateTimeStyles.AllowInnerWhite;
+			string[] formats = { "d" };
+
+			//Assert
+			Assert.IsFalse(new TheoryClause<string>("2000 - 12 - 31").IsDateTime(formatProvider, dateTimeStyles, formats).Evaluate());
+		}
+		#endregion IsDateTime
+
+
+		#region IsDecimal
+		[TestMethod]
+		public void IsDecimal_DecimalStringIsMinus123_456_ReturnsTrue()
+		{
+			Assert.IsTrue(new TheoryClause<string>("-123.456").IsDecimal().Evaluate());
 		}
 
-		/// <summary>
-		///A test for IsDouble
-		///</summary>
-		[TestMethod()]
-		public void IsDoubleTest()
+		[TestMethod]
+		public void IsDecimal_DecimalStringIsABC_ReturnsFalse()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			NumberStyles numberStyles = new NumberStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<string> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> actual;
-			actual = TheoryValueIsExtension.IsDouble(theoryClause, formatProvider, numberStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			Assert.IsFalse(new TheoryClause<string>("ABC").IsDecimal().Evaluate());
 		}
 
-		/// <summary>
-		///A test for IsEmail
-		///</summary>
-		[TestMethod()]
-		public void IsEmailTest()
+		[TestMethod]
+		public void IsDecimal_CustomFormat_IsExecuted()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> actual;
-			actual = TheoryValueIsExtension.IsEmail(theoryClause);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-De");
+			string correctDecimalString = "123.456,78";
+			string incorrectDecimalString = "123,456.78";
+
+			//Assert
+			Assert.IsTrue(new TheoryClause<string>(correctDecimalString).IsDecimal(formatProvider).Evaluate());
+			Assert.IsFalse(new TheoryClause<string>(incorrectDecimalString).IsDecimal(formatProvider).Evaluate());
+		}
+		#endregion IsDecimal
+
+
+		#region IsDouble
+		[TestMethod]
+		public void IsDouble_DoubleStringIsMinus1_23e2_ReturnsTrue()
+		{
+			Assert.IsTrue(new TheoryClause<string>("-1.23e2").IsDouble().Evaluate());
 		}
 
-		/// <summary>
-		///A test for IsFloat
-		///</summary>
-		[TestMethod()]
-		public void IsFloatTest()
+		[TestMethod]
+		public void IsDouble_DoubleStringIsABC_ReturnsFalse()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			NumberStyles numberStyles = new NumberStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<string> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> actual;
-			actual = TheoryValueIsExtension.IsFloat(theoryClause, formatProvider, numberStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			Assert.IsFalse(new TheoryClause<string> ("ABC").IsDouble().Evaluate());
 		}
 
-		/// <summary>
-		///A test for IsInt
-		///</summary>
-		[TestMethod()]
-		public void IsIntTest()
+		[TestMethod]
+		public void IsDouble_CustomFormat_IsExecuted()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			NumberStyles numberStyles = new NumberStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<string> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> actual;
-			actual = TheoryValueIsExtension.IsInt(theoryClause, formatProvider, numberStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-De");
+			string correctDoubleString = "123.456,78e1";
+			string incorrectDoubleString = "123,456.78e1";
+
+			//Assert
+			Assert.IsTrue(new TheoryClause<string> (correctDoubleString).IsDouble(formatProvider).Evaluate());
+			Assert.IsFalse(new TheoryClause<string> (incorrectDoubleString).IsDouble(formatProvider).Evaluate());
+		}
+		#endregion IsDouble
+
+
+		#region IsFloat
+		[TestMethod]
+		public void IsFloat_FloatStringIsMinus1_23_ReturnsTrue()
+		{
+			Assert.IsTrue(new TheoryClause<string> ("-1.23").IsFloat().Evaluate());
 		}
 
-		/// <summary>
-		///A test for IsLong
-		///</summary>
-		[TestMethod()]
-		public void IsLongTest()
+		[TestMethod]
+		public void IsFloat_FloatStringIsABC_ReturnsFalse()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			NumberStyles numberStyles = new NumberStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<string> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<string> actual;
-			actual = TheoryValueIsExtension.IsLong(theoryClause, formatProvider, numberStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			Assert.IsFalse(new TheoryClause<string> ("ABC").IsFloat().Evaluate());
 		}
+
+		[TestMethod]
+		public void IsFloat_CustomFormat_IsExecuted()
+		{
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-De");
+			string correctFloatString = "123456,78";
+			string incorrectFloatString = "123456.78";
+
+			//Assert
+			Assert.IsTrue(new TheoryClause<string> (correctFloatString).IsFloat(formatProvider).Evaluate());
+			Assert.IsFalse(new TheoryClause<string> (incorrectFloatString).IsFloat(formatProvider).Evaluate());
+		}
+		#endregion IsFloat
+
+
+		#region IsInt
+		[TestMethod]
+		public void IsInt_IntStringIsMinus123_ReturnsTrue()
+		{
+			Assert.IsTrue(new TheoryClause<string> ("-123").IsInt().Evaluate());
+		}
+
+		[TestMethod]
+		public void IsInt_IntStringIsABC_ReturnsFalse()
+		{
+			Assert.IsFalse(new TheoryClause<string> ("ABC").IsInt().Evaluate());
+		}
+
+		[TestMethod]
+		public void IsInt_CustomFormat_IsExecuted()
+		{
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-De");
+			string correctIntString = "123456";
+			string incorrectIntString = "123.456";
+
+			//Assert
+			Assert.IsTrue(new TheoryClause<string> (correctIntString).IsInt(formatProvider).Evaluate());
+			Assert.IsFalse(new TheoryClause<string> (incorrectIntString).IsInt(formatProvider).Evaluate());
+		}
+		#endregion IsInt
+
+
+		#region IsLong
+		[TestMethod]
+		public void IsLong_LongStringIsMinus111222333444_ReturnsTrue()
+		{
+			Assert.IsTrue(new TheoryClause<string>("-111222333444").IsLong().Evaluate());
+		}
+
+		[TestMethod]
+		public void IsLong_LongStringIsABC_ReturnsFalse()
+		{
+			Assert.IsFalse(new TheoryClause<string> ("ABC").IsLong().Evaluate());
+		}
+
+		[TestMethod]
+		public void IsLong_CustomFormat_IsExecuted()
+		{
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-De");
+			string correctLongString = "111222333444";
+			string incorrectLongString = "111.222.333.444";
+
+			//Assert
+			Assert.IsTrue(new TheoryClause<string> (correctLongString).IsLong(formatProvider).Evaluate());
+			Assert.IsFalse(new TheoryClause<string> (incorrectLongString).IsLong(formatProvider).Evaluate());
+		}
+		#endregion IsLong
+
+
+		#region IsEmail
+		[TestMethod]
+		public void IsEmail_EmailStringIsNameAtCompanyDotCom_ReturnsTrue()
+		{
+			Assert.IsTrue(new TheoryClause<string>("name@company.com").IsEmail().Evaluate());
+		}
+
+		[TestMethod]
+		public void IsEmail_EmailStringIsFirstNameDotLastNameAtTestDotCompanyDotCom_ReturnsTrue()
+		{
+			Assert.IsTrue(new TheoryClause<string>("FirstName.LastName@Test.Company.com").IsEmail().Evaluate());
+		}
+
+		[TestMethod]
+		public void IsEmail_EmailStringIsNameAtCompany_ReturnsFalse()
+		{
+			Assert.IsFalse(new TheoryClause<string>("name@company").IsEmail().Evaluate());
+		}
+
+		public void IsEmail_EmailStringMyEmail_ReturnsFalse()
+		{
+			Assert.IsFalse(new TheoryClause<string>("myemail").IsEmail().Evaluate());
+		}
+		#endregion IsEmail
 	}
 }

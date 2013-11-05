@@ -1,111 +1,237 @@
-﻿using FluentTheory;
+﻿using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Globalization;
+using FluentAssertions;
 
 namespace FluentTheory.UnitTest
 {
 	[TestClass]
 	public class TheoryValueAsExtensionTest
 	{
-		[TestMethod]
-		public void AsBoolTest()
+		#region Helpers
+		[TestInitialize]
+		public void Initialize()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			TheoryClause<bool> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<bool> actual;
-			actual = TheoryValueAsExtension.AsBool(theoryClause);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Use invariant culture to parse strings.
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+		}
+		#endregion Helpers
+
+
+		#region AsBool
+		[TestMethod]
+		public void AsBool_StringValueAsValidBoolean_HasBoolValue()
+		{
+			//Assert
+			Assert.IsInstanceOfType(new TheoryClause<string>("true").AsBool().Value, typeof(bool));
+			Assert.IsInstanceOfType(new TheoryClause<string>("false").AsBool().Value, typeof(bool));
 		}
 
 		[TestMethod]
-		public void AsDateTimeTest()
+		public void AsBool_StringValueAsInvalidBoolean_ThrowsFormatException()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			TheoryClause<DateTime> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<DateTime> actual;
-			actual = TheoryValueAsExtension.AsDateTime(theoryClause);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Assert
+			Action action = () => { var temp = new TheoryClause<string>("wrong string").AsBool().Value; };
+
+			//Act
+			action.ShouldThrow<FormatException>();
+		}
+		#endregion AsBool
+
+
+		#region AsDateTime
+		[TestMethod]
+		public void AsDateTime_StringValueAsValidDateTime_HasDateTimeValue()
+		{
+			//Assert
+			Assert.IsInstanceOfType(new TheoryClause<string>("2013-01-01 23:59:59 -0100").AsDateTime().Value, typeof(DateTime));
 		}
 
 		[TestMethod]
-		public void AsDateTimeTest1()
+		public void AsDateTime_StringValueAsInvalidDateTime_ThrowsFormatException()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			DateTimeStyles dateTimeStyles = new DateTimeStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<DateTime> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<DateTime> actual;
-			actual = TheoryValueAsExtension.AsDateTime(theoryClause, formatProvider, dateTimeStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Assert
+			Action action = () => { var temp = new TheoryClause<string>("Wrong Date Time").AsDateTime().Value; };
+
+			//Act
+			action.ShouldThrow<FormatException>();
 		}
 
 		[TestMethod]
-		public void AsDecimalTest()
+		public void AsDateTime_CustomFormatAndValidDate_HasDateTimeValue()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			NumberStyles numberStyles = new NumberStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<Decimal> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<Decimal> actual;
-			actual = TheoryValueAsExtension.AsDecimal(theoryClause, formatProvider, numberStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-DE");
+			DateTimeStyles dateTimeStyles = DateTimeStyles.AllowInnerWhite;
+			string[] formats = { "d" };
+
+			//Assert
+			Assert.IsInstanceOfType(new TheoryClause<string>("31 . 12 . 2000").AsDateTime(formatProvider, dateTimeStyles, formats).Value, typeof(DateTime));
 		}
 
 		[TestMethod]
-		public void AsDoubleTest()
+		public void AsDateTime_CustomFormatAndInvalidDate_ThrowsDException()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			NumberStyles numberStyles = new NumberStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<double> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<double> actual;
-			actual = TheoryValueAsExtension.AsDouble(theoryClause, formatProvider, numberStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-DE");
+			DateTimeStyles dateTimeStyles = DateTimeStyles.AllowInnerWhite;
+			string[] formats = { "d" };
+			Action action = () => { var temp = new TheoryClause<string>("2000 - 12 - 31").AsDateTime(formatProvider, dateTimeStyles, formats).Value; };
+
+			//Act
+			action.ShouldThrow<FormatException>();
+		}
+		#endregion AsDateTime
+
+
+		#region AsDecimal
+		[TestMethod]
+		public void AsDecimal_DecimalStringAsMinus123_456_HasDecimalValue()
+		{
+			Assert.IsInstanceOfType(new TheoryClause<string>("-123.456").AsDecimal().Value, typeof(decimal));
 		}
 
 		[TestMethod]
-		public void AsFloatTest()
+		public void AsDecimal_DecimalStringAsABC_ThrowsFormatException()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			NumberStyles numberStyles = new NumberStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<float> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<float> actual;
-			actual = TheoryValueAsExtension.AsFloat(theoryClause, formatProvider, numberStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Assert
+			Action action = () => { var temp = new TheoryClause<string>("ABC").AsDecimal().Value; };
+
+			//Act
+			action.ShouldThrow<FormatException>();
 		}
 
 		[TestMethod]
-		public void AsIntTest()
+		public void AsDecimal_CustomFormat_AsExecuted()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			NumberStyles numberStyles = new NumberStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<int> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<int> actual;
-			actual = TheoryValueAsExtension.AsInt(theoryClause, formatProvider, numberStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-De");
+			string correctDecimalString = "123.456,78";
+
+			//Assert
+			Assert.IsInstanceOfType(new TheoryClause<string>(correctDecimalString).AsDecimal(formatProvider).Value, typeof(decimal));
+		}
+		#endregion AsDecimal
+
+
+		#region AsDouble
+		[TestMethod]
+		public void AsDouble_DoubleStringAsMinus1_23e2_AsCorrect()
+		{
+			Assert.IsInstanceOfType(new TheoryClause<string>("-1.23e2").AsDouble().Value, typeof(double));
 		}
 
 		[TestMethod]
-		public void AsLongTest()
+		public void AsDouble_DoubleStringAsABC_ThrowsFormatException()
 		{
-			TheoryClause<string> theoryClause = null; // TODO: Initialize to an appropriate value
-			IFormatProvider formatProvider = null; // TODO: Initialize to an appropriate value
-			NumberStyles numberStyles = new NumberStyles(); // TODO: Initialize to an appropriate value
-			TheoryClause<long> expected = null; // TODO: Initialize to an appropriate value
-			TheoryClause<long> actual;
-			actual = TheoryValueAsExtension.AsLong(theoryClause, formatProvider, numberStyles);
-			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+			//Assert
+			Action action = () => { var temp = new TheoryClause<string>("ABC").AsDouble().Value; };
+
+			//Act
+			action.ShouldThrow<FormatException>();
 		}
+
+		[TestMethod]
+		public void AsDouble_CustomFormat_AsExecuted()
+		{
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-De");
+			string correctDoubleString = "123.456,78e1";
+
+			//Assert
+			Assert.IsInstanceOfType(new TheoryClause<string>(correctDoubleString).AsDouble(formatProvider).Value, typeof(double));
+		}
+		#endregion AsDouble
+
+
+		#region AsFloat
+		[TestMethod]
+		public void AsFloat_FloatStringAsMinus1_23_AsCorrect()
+		{
+			Assert.IsInstanceOfType(new TheoryClause<string>("-1.23").AsFloat().Value, typeof(float));
+		}
+
+		[TestMethod]
+		public void AsFloat_FloatStringAsABC_ThrowsFormatException()
+		{
+			//Assert
+			Action action = () => { var temp = new TheoryClause<string>("ABC").AsFloat().Value; };
+
+			//Act
+			action.ShouldThrow<FormatException>();
+		}
+
+		[TestMethod]
+		public void AsFloat_CustomFormat_AsExecuted()
+		{
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-De");
+			string correctFloatString = "123456,78";
+
+			//Assert
+			Assert.IsInstanceOfType(new TheoryClause<string>(correctFloatString).AsFloat(formatProvider).Value, typeof(float));
+		}
+		#endregion AsFloat
+
+
+		#region AsInt
+		[TestMethod]
+		public void AsInt_IntStringAsMinus123_AsCorrect()
+		{
+			Assert.IsInstanceOfType(new TheoryClause<string>("-123").AsInt().Value, typeof(int));
+		}
+
+		[TestMethod]
+		public void AsInt_IntStringAsABC_ThrowsFormatException()
+		{
+			//Assert
+			Action action = () => { var temp = new TheoryClause<string>("ABC").AsInt().Value; };
+
+			//Act
+			action.ShouldThrow<FormatException>();
+		}
+
+		[TestMethod]
+		public void AsInt_CustomFormat_AsExecuted()
+		{
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-De");
+			string correctIntString = "123456";
+
+			//Assert
+			Assert.IsInstanceOfType(new TheoryClause<string>(correctIntString).AsInt(formatProvider).Value, typeof(int));
+		}
+		#endregion AsInt
+
+
+		#region AsLong
+		[TestMethod]
+		public void AsLong_LongStringAsMinus111222333444_AsCorrect()
+		{
+			Assert.IsInstanceOfType(new TheoryClause<string>("-111222333444").AsLong().Value, typeof(long));
+		}
+
+		[TestMethod]
+		public void AsLong_LongStringAsABC_ThrowsFormatException()
+		{
+			//Assert
+			Action action = () => { var temp = new TheoryClause<string>("ABC").AsLong().Value; };
+
+			//Act
+			action.ShouldThrow<FormatException>();
+		}
+
+		[TestMethod]
+		public void AsLong_CustomFormat_AsExecuted()
+		{
+			//Arrange
+			IFormatProvider formatProvider = new CultureInfo("de-De");
+			string correctLongString = "111222333444";
+
+			//Assert
+			Assert.IsInstanceOfType(new TheoryClause<string>(correctLongString).AsLong(formatProvider).Value, typeof(long));
+		}
+		#endregion AsLong
 	}
 }

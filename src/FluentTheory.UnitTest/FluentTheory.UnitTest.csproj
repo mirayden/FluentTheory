@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\packages\FluentAssertions.2.1.0.0\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -55,6 +58,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="HypothesisTest.cs" />
     <Compile Include="TheoryClauseTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TheoryValueAsExtensionTest.cs" />
@@ -70,6 +74,7 @@
     <None Include="..\FluentTheory\FluentTheory.licenseheader">
       <Link>FluentTheory.licenseheader</Link>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
