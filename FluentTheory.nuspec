@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+	<metadata>
+		<id>FluentTheory</id>
+		<version>0.1</version>
+		<authors>Andrey Mir</authors>
+		<licenseUrl>http://www.apache.org/licenses/</licenseUrl>
+		<projectUrl>http://fluenttheory.github.com</projectUrl>
+		<iconUrl>http://fluenttheory.github.com/fluenttheory.png</iconUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>This is a .NET library used to prove theories.</description>
+		<releaseNotes>See ReleaseNotes.rd</releaseNotes>
+		<tags>Fluent Theory Hypothesis</tags>
+	</metadata>
+</package>

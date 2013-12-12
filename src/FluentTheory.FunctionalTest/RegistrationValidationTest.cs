@@ -168,5 +168,25 @@ namespace FluentTheory.FunctionalTest
 			Assert.IsFalse(theory.Evaluate());
 			Assert.AreEqual(5, errors.Count);
 		}
+
+		[TestMethod]
+		public void EvaluateTheoryClausesOnlyIfDateIsCorrect_DateStringIsABC_TheoryClausesWereNotEvaluates()
+		{
+			//Arrange
+			string dateString = "ABC";
+			var theory = new Theory();
+			var messages = new List<string>();
+			theory.Hypothesis()
+				.OnlyIf(x => TheoryClause.IsDateTime(dateString))
+				.Suppose(() => TheoryClause.Create(dateString).AsDateTime().Is(x => x > DateTime.Now))
+				.DoTrue(() => messages.Add("Date is okay"));
+
+			//Act
+			theory.Evaluate();
+			int messagesCount = messages.Count;
+
+			//Assert
+			Assert.AreEqual(messagesCount, 0);
+		}
 	}
 }

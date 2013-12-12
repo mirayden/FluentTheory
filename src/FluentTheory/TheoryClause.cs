@@ -78,7 +78,7 @@ namespace FluentTheory
 		/// <returns>True, if <paramref name="dateTimeString"/> is a valide <see cref="T:System.DateTime"/>, otherwise false.</returns>
 		public static bool IsDateTime(string dateTimeString)
 		{
-			if (String.IsNullOrWhiteSpace(dateTimeString))
+			if (String.IsNullOrEmpty(dateTimeString.Trim()))
 			{
 				return false;
 			}
@@ -99,7 +99,7 @@ namespace FluentTheory
 		public static bool IsDateTime(string dateTimeString, IFormatProvider formatProvider, DateTimeStyles dateTimeStyles,
 			params string[] formats)
 		{
-			if (String.IsNullOrWhiteSpace(dateTimeString))
+			if (String.IsNullOrEmpty(dateTimeString.Trim()))
 			{
 				return false;
 			}
@@ -121,7 +121,7 @@ namespace FluentTheory
 		/// <returns>True, if <paramref name="decimalString"/> is a valide <see cref="T:System.Decimal"/>, otherwise false.</returns>
 		public static bool IsDecimal(string decimalString, IFormatProvider formatProvider = null, NumberStyles numberStyles = NumberStyles.Number)
 		{
-			if (String.IsNullOrWhiteSpace(decimalString))
+			if (String.IsNullOrEmpty(decimalString.Trim()))
 			{
 				return false;
 			}
@@ -143,7 +143,7 @@ namespace FluentTheory
 		/// <returns>True, if <paramref name="intString"/> is a valide <see cref="T:System.Int32"/>, otherwise false.</returns>
 		public static bool IsInt(string intString, IFormatProvider formatProvider = null, NumberStyles numberStyles = NumberStyles.Integer)
 		{
-			if (String.IsNullOrWhiteSpace(intString))
+			if (String.IsNullOrEmpty(intString.Trim()))
 			{
 				return false;
 			}
@@ -165,7 +165,7 @@ namespace FluentTheory
 		/// <returns>True, if <paramref name="longString"/> is a valide <see cref="T:System.Int64"/>, otherwise false.</returns>
 		public static bool IsLong(string longString, IFormatProvider formatProvider = null, NumberStyles numberStyles = NumberStyles.Integer)
 		{
-			if (String.IsNullOrWhiteSpace(longString))
+			if (String.IsNullOrEmpty(longString.Trim()))
 			{
 				return false;
 			}
@@ -187,7 +187,7 @@ namespace FluentTheory
 		/// <returns>True, if <paramref name="floatString"/> is a valide <see cref="T:System.Single"/>, otherwise false.</returns>
 		public static bool IsFloat(string floatString, IFormatProvider formatProvider = null, NumberStyles numberStyles = NumberStyles.Float)
 		{
-			if (String.IsNullOrWhiteSpace(floatString))
+			if (String.IsNullOrEmpty(floatString.Trim()))
 			{
 				return false;
 			}
@@ -209,7 +209,7 @@ namespace FluentTheory
 		/// <returns>True, if <paramref name="doubleString"/> is a valide <see cref="T:System.Double"/>, otherwise false.</returns>
 		public static bool IsDouble(string doubleString, IFormatProvider formatProvider = null, NumberStyles numberStyles = NumberStyles.Float | NumberStyles.AllowThousands)
 		{
-			if (String.IsNullOrWhiteSpace(doubleString))
+			if (String.IsNullOrEmpty(doubleString.Trim()))
 			{
 				return false;
 			}
@@ -229,7 +229,7 @@ namespace FluentTheory
 		/// <returns>True, if <paramref name="boolString"/> is a valide <see cref="T:System.Boolean"/>, otherwise false.</returns>
 		public static bool IsBool(string boolString)
 		{
-			if (String.IsNullOrWhiteSpace(boolString))
+			if (String.IsNullOrEmpty(boolString.Trim()))
 			{
 				return false;
 			}
@@ -245,7 +245,7 @@ namespace FluentTheory
 		/// <returns>True, if <paramref name="emailString"/> is a valide email address.</returns>
 		public static bool IsEmail(string emailString)
 		{
-			if (String.IsNullOrWhiteSpace(emailString))
+			if (String.IsNullOrEmpty(emailString.Trim()))
 			{
 				return false;
 			}
@@ -254,7 +254,7 @@ namespace FluentTheory
 			bool ret = Regex.IsMatch(emailString,
 				@"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
 				@"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$",
-				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500));
+				RegexOptions.IgnoreCase);
 
 			return ret;
 		}

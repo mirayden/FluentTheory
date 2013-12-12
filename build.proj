@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<!--BEGIN Properties-->
+	<PropertyGroup>
+		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+		<BuildRoot>$(MSBuildThisFileDirectory)</BuildRoot>
+		<DropDirectory>$(BuildRoot)build\</DropDirectory>
+		<NuGetExe>$(BuildRoot).nuget\NuGet.exe</NuGetExe>
+		<ReleaseNotes>$([System.IO.File]::ReadAllText('$(BuildRoot)ReleaseNotes.md'))</ReleaseNotes>
+		<MSBuildCommunityTasksPath>$(BuildRoot)\.build</MSBuildCommunityTasksPath>
+	</PropertyGroup>
+	<!--END Properties-->
+
+	<!--BEGIN Import tasks-->
+	<Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+	<!--END Import tasks-->
+
+	<!--BEGIN Increment Assembly Version-->
+	<Target Name="IncrementVersion">
+		<Version VersionFile="$(MSBuildCommunityTasksPath)\version.txt" Major="1" Minor="0" BuildType="Automatic" StartDate="11.12.2013" RevisionType="BuildIncrement">
+			<Output TaskParameter="Major" PropertyName="Major" />
+			<Output TaskParameter="Minor" PropertyName="Minor" />
+			<Output TaskParameter="Build" PropertyName="Build" />
+			<Output TaskParameter="Revision" PropertyName="Revision" />
+		</Version>
+		<AssemblyInfo CodeLanguage="CS"
+			OutputFile="src\FluentTheory\Properties\VersionInfo.cs"
+			AssemblyVersion="$(Major).$(Minor)"
+			AssemblyFileVersion="$(Major).$(Minor).$(Build).$(Revision)" />
+		<PropertyGroup>
+			<PackageVersion>$(Major).$(Minor)</PackageVersion>
+		</PropertyGroup>
+	</Target>
+	<!--END Increment Assembly Version-->
+
+	<!--BEGIN Build-->
+	<Target Name="Build" DependsOnTargets="IncrementVersion">
+		<MakeDir Directories="$(DropDirectory)" Condition="!Exists('$(DropDirectory)')" />
+		<Delete Files="$(DropDirectory)**\*.*" ContinueOnError="false" />
+
+		<MSBuild Projects="src\FluentTheory\FluentTheory.csproj"
+			Properties="NuGet=true;TargetFrameworkVersion=v3.5;Configuration=$(Configuration)"
+			Targets="Rebuild" />
+		<Exec Command="xcopy &quot;src\FluentTheory\bin\Release\FluentTheory.*&quot; &quot;$(DropDirectory)lib\net35\&quot; /Y" ContinueOnError="false" />
+
+		<MSBuild Projects="src\FluentTheory\FluentTheory.csproj"
+			Properties="NuGet=true;TargetFrameworkVersion=v4.0;Configuration=$(Configuration)"
+			Targets="Rebuild" />
+		<Exec Command="xcopy &quot;src\FluentTheory\bin\Release\FluentTheory.*&quot; &quot;$(DropDirectory)lib\net40\&quot; /Y" ContinueOnError="false" />
+
+		<MSBuild Projects="src\FluentTheory\FluentTheory.csproj"
+			Properties="NuGet=true;TargetFrameworkVersion=v4.5;Configuration=$(Configuration)"
+			Targets="Rebuild" />
+		<Exec Command="xcopy &quot;src\FluentTheory\bin\Release\FluentTheory.*&quot; &quot;$(DropDirectory)lib\net45\&quot; /Y" ContinueOnError="false" />
+
+		<!-- Build nuget package -->
+		<Copy SourceFiles="FluentTheory.nuspec" DestinationFolder="$(DropDirectory)" />
+		<Exec Command="$(NuGetExe) pack -NoPackageAnalysis $(DropDirectory)FluentTheory.nuspec -Symbols -OutputDirectory $(DropDirectory) -Version $(PackageVersion)"
+			ContinueOnError="false" />
+	</Target>
+	<!--END Build-->
+</Project>

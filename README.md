@@ -1,4 +1,4 @@
 FluentTheory
 ============
 
-This is a fluent theory for C#.
+This is a .NET library used to prove theories.
