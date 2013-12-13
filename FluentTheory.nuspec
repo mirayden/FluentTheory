@@ -6,7 +6,7 @@
 		<authors>Andrey Mir</authors>
 		<licenseUrl>http://www.apache.org/licenses/</licenseUrl>
 		<projectUrl>http://fluenttheory.github.com</projectUrl>
-		<iconUrl>http://fluenttheory.github.com/fluenttheory.png</iconUrl>
+		<iconUrl>https://raw.github.com/andrey-mir/FluentTheory/master/fluenttheory.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>This is a .NET library used to prove theories.</description>
 		<releaseNotes>See ReleaseNotes.rd</releaseNotes>
