@@ -128,7 +128,7 @@ namespace FluentTheory
 		/// </summary>
 		/// <param name="hypothesisName">Name for new hypothesis.</param>
 		/// <returns>New hypothesis.</returns>
-		public Hypothesis NestedHypothesis(string hypothesisName = null)
+		public Hypothesis DependendHypothesis(string hypothesisName = null)
 		{
 			var hypothesis = Theory.Hypothesis(hypothesisName);
 			hypothesis.ParentHypothesis = this;

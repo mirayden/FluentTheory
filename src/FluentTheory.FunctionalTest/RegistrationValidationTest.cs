@@ -45,26 +45,27 @@ namespace FluentTheory.FunctionalTest
 		{
 			//Assert
 			string passwordString = "SecuredPassword123";
-			int strength = 0;
 
 			var theory = new Theory();
 			theory
 				.Suppose(() => passwordString != null)
-					.NestedHypothesis()
-						.Suppose(() => Regex.IsMatch(passwordString, "[A-Z]"))
-							.DoTrue(() => strength++)
-						.Suppose(() => Regex.IsMatch(passwordString, "[a-z]"))
-							.DoTrue(() => strength++)
-						.Suppose(() => Regex.IsMatch(passwordString, "[0-9]"))
-							.DoTrue(() => strength++)
-						.Suppose(() => passwordString.Length >= 8)
-							.DoTrue(() => strength++);
+					.DependendHypothesis()
+						.Suppose(() =>
+						{
+							int strength = 0;
+							strength += Regex.IsMatch(passwordString, "[A-Z]") ? 1 : 0;
+							strength += Regex.IsMatch(passwordString, "[a-z]") ? 1 : 0;
+							strength += Regex.IsMatch(passwordString, "[0-9]") ? 1 : 0;
+							strength += passwordString.Length >= 8 ? 1 : 0;
+
+							return strength >= 3;
+						});
 
 			//Act
-			theory.Evaluate();
+			bool result = theory.Evaluate();
 
 			//Assert
-			Assert.AreEqual(strength, 4);
+			Assert.IsTrue(result);
 		}
 
 		[TestMethod]
@@ -76,31 +77,29 @@ namespace FluentTheory.FunctionalTest
 			string lastName = "Smith";
 			string dob = "1990-01-01";
 			string email = "john.Smith@nomail.com";
-			int strength = 0;
 
 			var errors = new Dictionary<string, string>();
 
 			var theory = new Theory();
 			theory
-				.Hypothesis("password strength")
-					.Suppose(() => passwordString != null)
-						.NestedHypothesis()
-							.Suppose(() => Regex.IsMatch(passwordString, "[A-Z]"))
-								.DoTrue(() => strength++)
-							.Suppose(() => Regex.IsMatch(passwordString, "[a-z]"))
-								.DoTrue(() => strength++)
-							.Suppose(() => Regex.IsMatch(passwordString, "[0-9]"))
-								.DoTrue(() => strength++)
-							.Suppose(() => passwordString.Length >= 8)
-								.DoTrue(() => strength++);
+				.Suppose(() => passwordString != null)
+					.DependendHypothesis()
+						.Suppose(() =>
+						{
+							int strength = 0;
+							strength += Regex.IsMatch(passwordString, "[A-Z]") ? 1 : 0;
+							strength += Regex.IsMatch(passwordString, "[a-z]") ? 1 : 0;
+							strength += Regex.IsMatch(passwordString, "[0-9]") ? 1 : 0;
+							strength += passwordString.Length >= 8 ? 1 : 0;
 
-			theory.Suppose(() => theory["password strength"].IsValid == true)
-				.DoFalse(() => errors.Add("password", "Password is insecured"));
+							return strength >= 3;
+						})
+						.DoFalse(() => errors.Add("password", "Password is insecured"));
 
-			theory.Suppose(() => !string.IsNullOrWhiteSpace(firstName))
+			theory.Suppose(() => !string.IsNullOrEmpty(firstName))
 				.DoFalse(() => errors.Add("lastName", "First name is empty."));
 
-			theory.Suppose(() => !string.IsNullOrWhiteSpace(lastName))
+			theory.Suppose(() => !string.IsNullOrEmpty(lastName))
 				.DoFalse(() => errors.Add("lastName", "Last name is empty."));
 
 			theory.Suppose(() => 
@@ -127,31 +126,27 @@ namespace FluentTheory.FunctionalTest
 			string lastName = null;
 			string dob = "1800-01-01";
 			string email = "john.Smith@nomail";
-			int strength = 0;
 
 			var errors = new Dictionary<string, string>();
 
 			var theory = new Theory();
 			theory
 				.Hypothesis("password strength")
-					.Suppose(() => passwordString != null)
-						.NestedHypothesis()
-							.Suppose(() => Regex.IsMatch(passwordString, "[A-Z]"))
-								.DoTrue(() => strength++)
-							.Suppose(() => Regex.IsMatch(passwordString, "[a-z]"))
-								.DoTrue(() => strength++)
-							.Suppose(() => Regex.IsMatch(passwordString, "[0-9]"))
-								.DoTrue(() => strength++)
-							.Suppose(() => passwordString.Length >= 8)
-								.DoTrue(() => strength++);
+					.Suppose(() => {
+							int strength = 0;
+							strength += Regex.IsMatch(passwordString, "[A-Z]") ? 1 : 0;
+							strength += Regex.IsMatch(passwordString, "[a-z]") ? 1 : 0;
+							strength += Regex.IsMatch(passwordString, "[0-9]") ? 1 : 0;
+							strength += passwordString.Length >= 8 ? 1 : 0;
 
-			theory.Suppose(() => theory["password strength"].IsValid == false)
-				.DoFalse(() => errors.Add("password", "Password is insecured"));
+							return strength >= 3;
+						})
+					.DoFalse(() => errors.Add("password", "Password is insecured"));
 
-			theory.Suppose(() => !string.IsNullOrWhiteSpace(firstName))
+			theory.Suppose(() => !string.IsNullOrEmpty(firstName))
 				.DoFalse(() => errors.Add("firstName", "First name is empty."));
 
-			theory.Suppose(() => !string.IsNullOrWhiteSpace(lastName))
+			theory.Suppose(() => !string.IsNullOrEmpty(lastName))
 				.DoFalse(() => errors.Add("lastName", "Last name is empty."));
 
 			theory.Suppose(() =>

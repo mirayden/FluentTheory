@@ -27,7 +27,7 @@ namespace FluentTheory.UnitTest
 			//Arrange
 			var theory = new Theory();
 			var hypothesis = new Hypothesis(theory);
-			var nestedHypothesis = hypothesis.NestedHypothesis();
+			var nestedHypothesis = hypothesis.DependendHypothesis();
 			Action action = () => nestedHypothesis.Evaluate();
 
 			//Act
@@ -40,7 +40,7 @@ namespace FluentTheory.UnitTest
 			//Arrange
 			var theory = new Theory();
 			var hypothesis = new Hypothesis(theory).Suppose(() => false);
-			var nestedHypothesis = hypothesis.NestedHypothesis();
+			var nestedHypothesis = hypothesis.DependendHypothesis();
 
 			//Assert
 			Assert.AreNotEqual(hypothesis.Evaluate(), true);
