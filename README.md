@@ -6,6 +6,7 @@ Theory is build upon hypothese whereas each hypothesis contains assumptions. By 
 hypothesis will be evaluated as well. Theory is true if no one hypothesie is evaluated to false.
 
 Example:
+
 	//New user registration
 	var errors = new Dictionary<string, string>();
 	var userDataIsValid = new Theory();
