@@ -2,13 +2,14 @@
 <package >
 	<metadata>
 		<id>FluentTheory</id>
+		<title>FluentTheory</title>
 		<version>0.1</version>
 		<authors>Andrey Mir</authors>
 		<licenseUrl>http://www.apache.org/licenses/</licenseUrl>
 		<projectUrl>http://fluenttheory.github.com</projectUrl>
 		<iconUrl>https://raw.github.com/andrey-mir/FluentTheory/master/fluenttheory.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>This is a .NET library used to prove theories.</description>
+		<description>FluentTheory is a .NET library that allows to define and to evaluate theories.</description>
 		<releaseNotes>See ReleaseNotes.rd</releaseNotes>
 		<tags>Fluent Theory Hypothesis</tags>
 	</metadata>
