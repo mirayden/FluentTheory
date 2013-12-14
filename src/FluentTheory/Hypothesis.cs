@@ -64,7 +64,7 @@ namespace FluentTheory
 		/// Creates new instance.
 		/// </summary>
 		/// <param name="theory">Referenced theory.</param>
-		public Hypothesis(Theory theory)
+		internal Hypothesis(Theory theory)
 		{
 			_falseResultActions = new List<Action>();
 			_trueResultActions = new List<Action>();
@@ -83,7 +83,7 @@ namespace FluentTheory
 		/// Evaluation result as boolean if all preconditions are fulfilled and, in case of nested hypothesis,
 		/// if parent hypothesis evaluation is true. Otherwise null.
 		/// </returns>
-		public bool? Evaluate()
+		internal bool? Evaluate()
 		{
 			if (IsEvaluated)
 			{
